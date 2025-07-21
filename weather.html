@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body{
+    margin: 0px;
+}
+*{
+    box-sizing: border-box;
+}
+ul{
+    padding: 0;
+}
+li{
+    list-style: none;
+}
+html{
+    font-family: sans-serif;
+}
+header{
+    height: 100px;
+    background-color:rgb(165, 144, 184);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+main{
+     height:calc( 100vh - 100px);
+    background-color:blueviolet;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+}
+.weather-container{
+    display: flex;
+    gap: 1rem;
+}
+
+
+
+
+    </style>
+</head>
+<body>
+    <header>
+        <div class="input-container">
+            <input type="text" name="" id="" placeholder="enter location">
+            <button id="button">search</button>
+        </div>
+    </header>
+    <main>
+        <div class="weather-container">
+            <div class="temparature">27.1°C</div>
+            <div class="location-date">
+                <div class="location"> new delhi</div>
+                <span class="time">17:00</span>
+                <span class="day">monday</span>
+                <span class="date">21-04-2025</span>
+            </div>
+            <div class="weather-state">
+                <img src="./hot-weather-3d-rendering-isolated-on-transparent-background-ui-ux-icon-design-web-and-app-trend-png.webp"  alt=" " height="70px" class="emoji">
+                <div class="condition">sunny</div>
+            </div>
+        </div>
+    </main>
+    <script>
+        const searchbtn=document.querySelector("#button");
+        const searchinput=document.querySelector("input");
+        const tempelem=document.querySelector(".temparature");
+        const locationelem=document.querySelector(".location");
+        const emoji=document.querySelector(".emoji");
+        const dateelem = document.querySelector(".date");
+        const timeelem = document.querySelector(".time");
+        const conditionelem = document.querySelector(".condition");
+         const dayelem = document.querySelector(".day");
+
+        searchbtn.addEventListener("click",async function(){
+            const location=searchinput.value;
+            if(location !=""){
+                const data=await fetchweather(location)
+                if (data == null){
+                }else{
+                    updateDOM(data);
+                }
+                searchinput.value = "";
+            }
+
+        })
+
+        function updateDOM(data){
+            console.log("i will update the data",data);
+            const temp=data.current.temp_c;
+            const location=data.location.name;
+             const timedata = data.location.localtime;
+            const[date, time] =timedata.split(" ");
+            const iconlink =data.current.condition.icon;
+            const condition=data.current.condition.text;
+            const day = new Date(date).toLocaleDateString("en-US", { weekday: "long" });
+            console.log("`````````````````");
+            console.log("temp: ",temp,"location: ",location,"date: ",date);
+            console.log("time: ",time,"link: ",iconlink);
+            console.log("``````````````");
+            tempelem.textContent = temp + "°C";
+            locationelem.textContent = location;
+             emoji.src = "https:" + iconlink;
+             dateelem.textContent = date;
+            timeelem.textContent =time;
+            conditionelem.textContent =condition;
+            dayelem.textContent=day;
+
+
+        }
+
+        async function  fetchweather(location) {
+            const url=`http://api.weatherapi.com/v1/current.json?key=1be4bb42061140509a8122725251206&q=${location}&aqi=no`
+            const response = await fetch(url);
+            if(response.status == 400){
+                alert("location is invalid");
+                return null;
+            }else if(response.status == 200){
+                const json = await response.json();
+                console.log(json);
+                return json;
+            }
+        }
+    </script>
+</body>
+</html>
